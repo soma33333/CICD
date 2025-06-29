@@ -6,11 +6,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    services:
-      mongo:
-        image: mongo
-        ports: [ "27017:27017" ]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,14 +15,22 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install & test backend
+      - name: Install Backend Dependencies
         working-directory: backend
-        run: |
-          npm install
-          npm test
+        run: npm install
 
-      - name: Install & test frontend
+      - name: Fix Jest Permission
+        working-directory: backend
+        run: chmod +x ./node_modules/.bin/jest
+
+      - name: Run Backend Tests
+        working-directory: backend
+        run: npm test
+
+      - name: Install Frontend Dependencies
         working-directory: frontend
-        run: |
-          npm install
-          npm test
+        run: npm install
+
+      - name: Run Frontend Tests
+        working-directory: frontend
+        run: npm test
